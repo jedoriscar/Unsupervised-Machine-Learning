@@ -51,17 +51,30 @@ iat_pca_data_numeric <- na.omit(iat_pca_data_numeric)
 iat_pca_data_scaled <- scale(iat_pca_data_numeric)
 
 # Perform Principal Component Analysis (PCA) ----
-# Using the prcomp function from the stats package to perform PCA on the scaled data.
+# PCA is a dimensionality reduction technique that transforms the data into a set of orthogonal components.
+# These components (principal components) capture the most variance in the data.
+# We use the prcomp function to perform PCA on the scaled dataset.
+# Arguments:
+#   - center = TRUE: Ensures that the data is centered by subtracting the mean of each variable.
+#   - scale. = TRUE: Scales the data to have a standard deviation of 1, making all variables comparable.
 pca_result <- prcomp(iat_pca_data_scaled, center = TRUE, scale. = TRUE)
 
 # Summary of PCA results ----
-# This provides the standard deviations of the principal components, and their rotation (or loadings).
+# The summary provides:
+#   - Standard deviations of each principal component, which indicate the amount of variance explained.
+#   - Proportion of Variance: Shows the variance explained by each principal component as a percentage of the total variance.
+#   - Cumulative Proportion: Cumulatively adds up the variance explained by the components, helping to decide how many components to retain.
 summary(pca_result)
+
+# Key outputs from prcomp:
+#   - pca_result$sdev: Standard deviations of the principal components.
+#   - pca_result$rotation: Loadings of the original variables on the principal components, showing their contributions.
+#   - pca_result$x: Transformed data in terms of the principal components (scores for each observation).
 
 # Print the loadings (principal component vectors) ----
 # Loadings represent the correlation between the original variables and the principal components.
 print(pca_result$rotation)
-
+rotations <- pca_result$rotation
 # Visualize the variance explained by each principal component ----
 # Create a scree plot to visualize the proportion of variance explained by each component.
 fviz_eig(pca_result, addlabels = TRUE, ylim = c(0, 50)) +

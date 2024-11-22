@@ -1,5 +1,5 @@
 # Unsupervised Machine Learning Tutorial ----
-# K-Modes Clustering ----
+# Density Based Spatial Noise Clustering (DBSCAN) ----
 
 # Load necessary packages ----
 # These packages are required for various tasks:
@@ -36,19 +36,33 @@ iat_numeric_scaled <- scale(iat_numeric)
 # Check the summary of the scaled data to ensure it has been standardized correctly.
 summary(iat_numeric_scaled)
 
-# Visualizing k-Nearest Neighbors (kNN) to see how close data points are to one another ----
-# kNN distance plot helps in choosing the appropriate eps value for DBSCAN.
-kNNdistplot(iat_numeric_scaled, k = 5) # Adjust k based on MinPts
-abline(h = .55, col = "red", lty = 2) # Add a horizontal line at height 3, adjust based on the plot
+# Visualizing k-Nearest Neighbors (kNN) Distances ----
+# The kNN distance plot is a diagnostic tool used in DBSCAN to determine the optimal value for 'eps' (the neighborhood radius).
+# The 'k' parameter corresponds to the number of neighbors (MinPts), which influences how clusters are defined.
 
-# Density Based Clustering ----
-# Compute Density-Based clustering with chosen epsilon (eps) and minimum points (MinPts)
+# Generate the kNN distance plot for the scaled data
+kNNdistplot(iat_numeric_scaled, k = 5) # Set k to 5, aligning with the MinPts parameter in DBSCAN
+
+# Add a horizontal line to highlight the 'elbow point' in the kNN plot
+abline(h = 0.55, col = "red", lty = 2) # Set at the chosen 'eps' value (based on the plot inspection)
+# The horizontal line indicates the threshold distance for clustering (eps). 
+# Points below this line are considered part of a dense cluster, while points above may be treated as noise.
+
+# Density-Based Clustering with DBSCAN ----
+# Perform DBSCAN clustering using the scaled data
+# Parameters:
+# 'eps' specifies the neighborhood radius for clustering.
+# 'minPts' is the minimum number of points required to form a dense region (cluster).
 set.seed(1234) # Set seed for reproducibility in cluster assignment
-db.res <- dbscan(iat_numeric_scaled, eps = 0.61, minPts = 5) 
+db.res <- dbscan(iat_numeric_scaled, eps = 0.61, minPts = 5) # Perform DBSCAN with specified parameters
 
-# Print the clustering results ----
-# Display the results of the DBSCAN clustering
-print(db.res)
+# Print the DBSCAN clustering results ----
+# The DBSCAN output includes the following components:
+# 'cluster': Cluster assignments for each data point. Points assigned to 0 are considered noise.
+# 'eps': The neighborhood radius used for clustering.
+# 'minPts': The minimum number of points required to form a cluster.
+# 'isseed': A logical vector indicating whether each point is a core point (TRUE) or not (FALSE).
+print(db.res) # Display the clustering results
 
 # Display a table of the clustering results against one of the variables ----
 # Calculate the mean of each variable by cluster ----
@@ -66,19 +80,23 @@ iat_clusters <- cbind(iat_clean, cluster = db.res$cluster)
 # Clusters form around core points, and noise points are labeled as outliers. The number of clusters isn't predetermined; it's based on data density and the chosen parameters.
 
 # Create a dataframe that includes the data and the cluster labels ----
-iat_numeric_scaled_df <- as.data.frame(iat_numeric_scaled)
-iat_numeric_scaled_df$cluster <- factor(db.res$cluster)
+# Converting the scaled dataset into a dataframe for easy manipulation
+iat_numeric_scaled_df <- as.data.frame(iat_numeric_scaled) # Convert to dataframe
+iat_numeric_scaled_df$cluster <- factor(db.res$cluster) # Add cluster labels from DBSCAN
 
 # Filter out noise points (cluster 0) ----
-# Removing noise points to focus on the actual clusters
+# DBSCAN assigns points not belonging to any cluster as "noise" (cluster 0). 
+# Here, we remove noise points to focus on the main clusters.
 iat_numeric_scaled_df_filtered <- iat_numeric_scaled_df %>%
-  filter(cluster != 0)
+  filter(cluster != 0) # Exclude noise points (cluster 0)
 
 # Plot the clustering results without noise points ----
-# Use 'factoextra' to create a cluster plot
-fviz_cluster(list(data = iat_numeric_scaled_df_filtered[, -ncol(iat_numeric_scaled_df_filtered)], 
-                  cluster = iat_numeric_scaled_df_filtered$cluster),
-             geom = "point", # Points represent data observations
-             ellipse.type = "convex", # Convex hulls around clusters
-             ggtheme = theme_minimal(), # Minimal theme for clarity
-             palette = "jco") # Color palette for clusters
+# Use 'factoextra' to visualize the clustering results, highlighting actual clusters without noise.
+fviz_cluster(list(
+  data = iat_numeric_scaled_df_filtered[, -ncol(iat_numeric_scaled_df_filtered)], # Exclude the cluster column for plotting
+  cluster = iat_numeric_scaled_df_filtered$cluster), # Use the cluster assignments
+  geom = "point", # Each data observation is shown as a point
+  ellipse.type = "convex", # Draw convex hulls around each cluster
+  ggtheme = theme_minimal(), # Apply a clean, minimal theme
+  palette = "jco" # Use the 'jco' color palette for clusters
+)
