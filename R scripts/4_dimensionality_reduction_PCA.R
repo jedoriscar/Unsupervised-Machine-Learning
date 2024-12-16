@@ -35,12 +35,12 @@ variables_to_keep <- c("D_biep.White_Good_all", "att7", "Tblack_0to10",
                        "mcpr14", "mcpr15", "mcpr16", "mcpr17")
 
 iat_pca_data <- iat_clean %>%
-  select(all_of(variables_to_keep)) # Select only specified variables
+  dplyr::select(all_of(variables_to_keep)) # Select only specified variables
 
 # Keep only numeric variables for PCA ----
 # PCA requires numeric variables, so we filter the dataset to include only numeric columns.
 iat_pca_data_numeric <- iat_pca_data %>%
-  select(where(is.numeric))
+  dplyr::select(where(is.numeric))
 
 # Handle missing data ----
 # PCA requires complete data, so we will remove rows with any missing values.

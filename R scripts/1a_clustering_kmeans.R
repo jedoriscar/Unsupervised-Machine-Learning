@@ -16,7 +16,7 @@ library(haven)       # Enables working with datasets from SPSS, SAS, or Stata
 
 # Set options to improve readability of output ----
 options(scipen = 99999)  # Turns off scientific notation in output, ensuring results are easier to interpret
-
+set.seed(1234) # Set seed for reproducibility
 # Load data ----
 # Here we load the necessary datasets for clustering. Using the 'here' package ensures consistent file paths,
 # regardless of where the script is run. If you're not using 'here', replace `here()` with the specific file paths.
@@ -33,7 +33,7 @@ load(here("Data/iat.rda")) # This is the cleaned dataset we will use for cluster
 
 variables_to_keep <- c("politicalid_7",           # Political ideology (e.g., liberal to conservative)
                        "D_biep.White_Good_all",   # Implicit attitudes (e.g., pro-White/anti-Black bias)
-                       "Tblack_0to10")           # Neighborhood racial demographics (e.g., percentage Black)
+                       "Tblack_0to10")           # Explicit attitudes (e.g., percentage Black)
 
 iat_numeric <- iat_clean %>%
   select(where(is.numeric)) %>%            # Select only numeric variables from the dataset
@@ -95,7 +95,6 @@ fviz_nbclust(iat_numeric_scaled, kmeans, method = "wss") + # Generate WSS plot u
 # K-means is a clustering algorithm that groups data points into K clusters, minimizing the total within-cluster variance.
 # The algorithm uses Euclidean distance by default to measure the distance between data points and their cluster centroids.
 
-set.seed(1234) # Set seed for reproducibility
 # Setting a random seed ensures that the cluster assignments are consistent each time the code is run,
 # as k-means clustering involves a random initialization of centroids.
 

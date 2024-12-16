@@ -34,7 +34,7 @@ variables_to_keep <- c("D_biep.White_Good_all", "att7", "Tblack_0to10",
                        "mcpr14", "mcpr15", "mcpr16", "mcpr17")
 
 iat_market_basket_data <- iat_clean %>%
-  select(all_of(variables_to_keep)) # Select only specified variables
+  dplyr::select(all_of(variables_to_keep)) # Select only specified variables
 
 # Convert data to transactions ----
 # Market Basket Analysis (MBA) requires the dataset to be formatted as "transactions."
@@ -101,14 +101,14 @@ plot(rules, method = "paracoord", control = list(reorder = TRUE, alpha = 0.8))
 # Transparency (alpha = 0.8) reduces clutter for better visualization.
 
 # Using arulesViz to create visualizations of the association rules.
-plot(rules, method = "graph", control = list(type = "items"))
-plot(rules, method = "scatterplot", measure = c("support", "confidence"), shading = "lift")
+# plot(rules, method = "graph", control = list(type = "items"))
+# plot(rules, method = "scatterplot", measure = c("support", "confidence"), shading = "lift")
 
-# Scatter Plot (Matrix Plot)
-plot(rules, measure = c("support", "confidence"), shading = "lift")
+# # Scatter Plot (Matrix Plot)
+# plot(rules, measure = c("support", "confidence"), shading = "lift")
 
-# Grouped Matrix Plot
-plot(rules, method = "grouped")
+# # Grouped Matrix Plot
+# plot(rules, method = "grouped")
 # Save the association rules ----
 # Save the rules for future use.
 save(rules, file = here("data/association_rules.rda"))

@@ -5,8 +5,7 @@
 # These packages are required for various tasks:
 library(tidyverse) # For data manipulation
 library(here) # For managing file paths
-library(klaR) # For performing K-modes clustering
-library(vcd) # For visualizing categorical data
+library(factoextra)  # Provides tools for visualizing clustering results
 library(dplyr) # For data manipulation
 library(dbscan) # For density-based clustering
 library(ggplot2) # For creating plots
@@ -24,9 +23,9 @@ variables_to_keep <- c("politicalid_7",
                        "D_biep.White_Good_all", "Tblack_0to10")
 
 iat_numeric <- iat_clean %>%
-  select(where(is.numeric)) %>% # Select only numeric columns
-  select(where(~ var(.) > 1e-10)) %>% # Exclude columns with near-zero variance
-  select(all_of(variables_to_keep)) # Include only specified variables
+  dplyr::select(where(is.numeric)) %>% # Select only numeric columns
+  dplyr::select(where(~ var(.) > 1e-10)) %>% # Exclude columns with near-zero variance
+  dplyr::select(all_of(variables_to_keep)) # Include only specified variables
 
 # Standardize the numeric variables ----
 # Scaling the data to have mean 0 and standard deviation 1, which is important for clustering.
